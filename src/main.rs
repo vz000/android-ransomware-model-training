@@ -4,12 +4,15 @@ use std::process::{Command, Stdio};
 fn main() {
     println!("Analyzing packages under /data/app/");
     let _s_train = static_training("./data/app/".to_string());
-
+    let _parse_permissions = parse_permissions();
 }
 
-pub fn static_training(dir: String) -> Result<i8, String> {
+fn static_training(dir: String) -> Result<i8, String> {
     let packages = fs::read_dir(dir);
     let mut out_num : i32 = 0;
+
+    let _rw_dir = fs::create_dir("./out/ransomware/");
+    let _gw_dir = fs::create_dir("./out/goodware/");
 
     if packages.is_ok() {
         for package in packages.unwrap() {
@@ -25,7 +28,18 @@ pub fn static_training(dir: String) -> Result<i8, String> {
         };
         Ok(1)
     } else {
-        Err("Failed to read directory".to_string())
+        Err("Failed to read directory.".to_string())
+    }
+}
+
+fn parse_permissions() -> Result<i8, String>{
+    let py_call = Command::new("python").arg("src/algorithm/static/static.py").stdout(Stdio::piped())
+                                                          .output();
+    if py_call.is_ok() {
+        println!("Parsed permissions.");
+        Ok(1)
+    } else {
+        Err("Something went wrong.".to_string())
     }
 }
 
@@ -42,5 +56,11 @@ mod tests {
     #[should_panic]
     fn it_fails_to_read_dir() {
         static_training("/bad/path/".to_string()).unwrap();
+    }
+
+    #[test]
+    fn it_parses_permissions() {
+        let res = parse_permissions().unwrap();
+        assert_eq!(res,1);
     }
 }

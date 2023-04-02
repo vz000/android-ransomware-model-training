@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "init"
+name = "apk-analysis"
 version = "0.1.0"

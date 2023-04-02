@@ -1,5 +1,5 @@
 [package]
-name = "init"
+name = "apk-analysis"
 version = "0.1.0"
 edition = "2021"
 

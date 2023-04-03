@@ -1,5 +1,7 @@
 import csv
+import sys
 import os
+from static_stats import permissions_stats
 
 # To simulate the real case. Normal apps are stored inside of /data/app/
 # TODO: Handle apk deletion when data cannot be read by aapt by rust main.
@@ -9,11 +11,14 @@ import os
 #param n - n-gram size
 '''
 class static_model():
-    def __init__(self, step = 0, n = 3):
+    def __init__(self, step, type: str, n = 3):
         self.step = step
         self.n = n
+        self.type = type
         if self.step == 0:
-            self.__parse_permissions__("./out/")
+            self.__parse_permissions__("./out/" + self.type + "/")
+            stats = permissions_stats(self.type)
+            out_stats_file = stats.get_output_file()
 
     def __parse_permissions__(self, datadir_name: str) -> None:
         datalist = os.listdir(datadir_name)
@@ -24,10 +29,9 @@ class static_model():
                     if "uses-permission:" in data:
                         permission = data.split(" ")[1].split("=")[1][1:-3].split(".")[-1]
                         apk_permissions.append(permission)
-
-                # Rust will call and this must be fixed to fit the directory
-                with open('./out/permissions.csv', 'a+', newline='') as file:
+                file_name = "./out/"+self.type+"/permissions.csv"
+                with open(file_name, 'a+', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(apk_permissions)
 
-main_static = static_model(0)
+main_static = static_model(int(sys.argv[1]),str(sys.argv[2]))

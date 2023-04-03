@@ -1,33 +1,39 @@
 use std::fs;
 use std::env;
+use std::path::Path;
 use std::process::{Command, Stdio};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let _res = choose_task(args[1].clone(),args[2].clone());
+    let res = train_option(args[1].clone(),args[2].clone()).unwrap();
+    if res == 1 {
+        let _m_res = static_model();
+    } else {
+        println!("test");
+    }
 }
 
-fn choose_task(option: String, data_type: String) -> Result<i8, String> {
+fn train_option(option: String, data_type: String) -> Result<i8, String> {
     if option == "train" || option == "class" && data_type == "nslf" || data_type == "slf" {
         if option == "train" {
-            println!("Analyzing packages under /data/app/");
-            let s_train = static_training("./data/app/".to_string(), data_type).unwrap();
+            let in_folder = format!("./data/{}/static/",data_type);
+            println!("Analyzing packages under /data/{}/static/",data_type);
+            let s_train = static_data(in_folder, data_type).unwrap();
             let parse_permissions = parse_permissions(s_train);
-            if parse_permissions.is_ok() {
-                Ok(1)
-            } else {
-                Err("An error occurred while parsing permissions.".to_string())
+                if parse_permissions.is_ok() {
+                    Ok(1)
+                } else {
+                    Err("An error occurred while parsing permissions.".to_string())
             }
         } else {
-            println!("Train section");
-            Ok(1)
+            Ok(2)
         }
     } else {
         Err("Option not available".to_string())
     }
 }
 
-fn static_training(dir: String, out_dir: String) -> Result<String, String> {
+fn static_data(dir: String, out_dir: String) -> Result<String, String> {
     let packages = fs::read_dir(dir);
     let mut out_num : i32 = 0;
     let new_dir: String;
@@ -58,13 +64,29 @@ fn static_training(dir: String, out_dir: String) -> Result<String, String> {
 }
 
 fn parse_permissions(data_type: String) -> Result<i8, String>{
-    let py_call = Command::new("python").arg("src/algorithm/static/static.py").arg("0").arg(data_type)
-                                                                                .stdout(Stdio::piped()).output();
+    let py_call = Command::new("python").arg("src/algorithm/static/static.py").arg("-1").arg(data_type)
+        .stdout(Stdio::piped()).output();  
+
     if py_call.is_ok() {
         println!("Parsed permissions.");
         Ok(1)
     } else {
         Err("Something went wrong.".to_string())
+    }
+}
+
+fn static_model() -> Result<i8,String>{
+    if Path::new("./out/ransomware/").exists() && Path::new("./out/goodware/").exists() {
+        let py_call = Command::new("python").arg("src/algorithm/static/static.py").arg("0").arg("ransomware")
+                                                .stdout(Stdio::piped()).output();
+        if py_call.is_ok() {
+            println!("Detectors were generated");
+            Ok(1)
+        } else {
+            Err("Something went wrong".to_string())
+        }
+    } else {
+        Err("Both ransomware and goodware data must be available.".to_string())
     }
 }
 
@@ -74,7 +96,7 @@ mod tests {
     #[test]
     fn it_gets_permissions() {
         // Uses default input "/data/app" for static training.
-        let result = choose_task("train".to_string(),"slf".to_string()).unwrap();
+        let result = train_option("train".to_string(),"slf".to_string()).unwrap();
         assert_eq!(result,1);
     }
 
@@ -87,13 +109,13 @@ mod tests {
     #[test]
     #[should_panic]
     fn it_fails_to_read_dir() {
-        static_training("/bad/path/".to_string(),"slf".to_string()).unwrap();
+        static_data("/bad/path/".to_string(),"slf".to_string()).unwrap();
     }
     
     #[test]
     #[should_panic]
     fn it_fails_init_option() {
         // It fails to identify the options available
-        choose_task("Invalid".to_string(),"Invalid".to_string()).unwrap();
+        train_option("Invalid".to_string(),"Invalid".to_string()).unwrap();
     }
 }

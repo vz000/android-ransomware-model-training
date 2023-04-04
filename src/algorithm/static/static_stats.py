@@ -2,8 +2,8 @@ import pandas as pd
 
 class permissions_stats():
     def __init__(self, type :str) -> None:
-        self.data_file = "./out/"+type+'/permissions.csv' # csv file with permissions. Use default name.
-        self.output_file = './out/'+type+'/static.csv'
+        self.data_file = "./out/"+type+'/static/train/permissions.csv' # csv file with permissions. Use default name.
+        self.output_file = './out/ransomware/static.csv'
         pd.set_option('display.float_format','{:.0f}'.format)
         self.permissions_quantity = pd.DataFrame({'Quantity':[]})
         self.permissions_limit = 50

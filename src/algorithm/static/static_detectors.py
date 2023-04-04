@@ -6,7 +6,7 @@ class static_detectors():
         self.r = r
         self.selfset = []
         self.detector_set = []
-        self.selfDataset = "./out/goodware/permissions.csv"
+        self.selfDataset = "./out/goodware/static/train/permissions.csv" # For NSA, the dataset with non-malicious samples is the "self".
         self.first_detector_set = ngram
         self.permission_list = permission_list
 

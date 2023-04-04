@@ -8,11 +8,11 @@ pub mod static_analysis {
     use crate::static_analysis::Path;
     use crate::static_analysis::fs;
 
-    pub fn read_args(args: Vec<String>) -> Result<i8, String> {
-        if args[1].to_string() == "train" {
+    pub fn static_options(args: Vec<String>) -> Result<i8, String> {
+        if args[2].to_string() == "train" {
             let types = vec!["ransomware","goodware"];
             for apk_type in types {
-                let _res = parse_data_from_apk(args[1].to_string(), apk_type.to_string());
+                let _res = parse_data_from_apk(args[2].to_string(), apk_type.to_string());
             }
             let m_res = static_model();
             if m_res.is_ok() {
@@ -20,10 +20,10 @@ pub mod static_analysis {
             } else {
                 Err("Error in read args.".to_string())
             }
-        } else if args[1].to_string() == "class" {
+        } else if args[2].to_string() == "class" {
             let types = vec!["ransomware"]; // Goodware can be added to this vector.
             for apk_type in types {
-                let _res = parse_data_from_apk(args[1].to_string(), apk_type.to_string());
+                let _res = parse_data_from_apk(args[2].to_string(), apk_type.to_string());
                 let _m_res = classify(apk_type.to_string());
             }
             Ok(1)

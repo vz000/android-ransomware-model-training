@@ -61,9 +61,5 @@ class static_classify():
                         results.append(0)
         
         with open("results.csv","a+",newline='') as res_file:
-            count = 0
-            for res in results:
-                if res == 1:
-                    count += 1
             writer = csv.writer(res_file)
-            writer.writerow(["Result with n = {}, step = {}, number or ngrams = {}, is {}%".format(self.n,step,r,(count/len(results))*100)])
+            writer.writerow(["Result with n = {}, step = {}, number or ngrams = {}, is {}%".format(self.n,step,r,(results.count(1)/len(results))*100)])

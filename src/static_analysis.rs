@@ -52,17 +52,10 @@ pub mod static_analysis {
         let packages = fs::read_dir(dir);
         let mut out_num : i32 = 0;
         let new_dir: String;
-        if out_dir == "ransomware" {
-            let _rw_dir = fs::create_dir("./out/ransomware/");
-            let subdir_name = format!("./out/ransomware/static/{}",phase);
-            let _rw_subdir = fs::create_dir(subdir_name);
-            new_dir = "ransomware".to_string();
-        } else {
-            let _gw_dir = fs::create_dir("./out/goodware/");
-            let subdir_name = format!("./out/goodware/static/{}",phase);
-            let _gw_subdir = fs::create_dir(subdir_name);
-            new_dir = "goodware".to_string();
-        }
+        let dir_names = vec![format!("./out/{}/",out_dir),format!("./out/{}/static/{}/",out_dir,phase)];
+        let _main_dir = fs::create_dir(&dir_names[0]); // For parent folder. Example: /out/ransomware/
+        let _sub_dir = fs::create_dir(&dir_names[1]); // For child folder. Example: /out/ransomware/static/train
+        new_dir = out_dir.to_string();
     
         if packages.is_ok() {
             for package in packages.unwrap() {

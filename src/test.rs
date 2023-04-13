@@ -2,7 +2,7 @@ mod test {
     use crate::static_analysis::static_analysis::*;
     #[test]
     fn it_gets_permissions() {
-        let result = parse_data_from_apk("train".to_string(),"goodware".to_string()).unwrap();
+        let result = get_data_from_apk("train".to_string(),"goodware".to_string()).unwrap();
         assert_eq!(result,1);
     }
 
@@ -22,6 +22,12 @@ mod test {
     #[should_panic]
     fn it_fails_init_option() {
         // It fails to identify the options available
-        parse_data_from_apk("Invalid".to_string(),"Invalid".to_string()).unwrap();
+        get_data_from_apk("Invalid".to_string(),"Invalid".to_string()).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn it_fails_to_train_model() {
+        static_model(2).unwrap();
     }
 }

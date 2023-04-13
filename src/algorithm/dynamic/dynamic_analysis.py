@@ -14,7 +14,6 @@ class dynamic_model:
         self.__parse_logs__() # parse logs to get call name only
         self.__unique_ngrams__() # fetch unique ngrams
         self.ransomware_top_calls = 'ransomware-call-stats.csv'
-        data_calls = 'logsRW.csv'
 
     def __parse_logs__(self) -> None:
         folderName = "./data/"+self.data_type+"/dynamic/"

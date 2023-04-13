@@ -1,38 +1,28 @@
 use std::fs;
-use std::path::Path;
 use std::process::{Command, Stdio};
 
 pub mod static_analysis {
     use crate::static_analysis::Command;
     use crate::static_analysis::Stdio;
-    use crate::static_analysis::Path;
     use crate::static_analysis::fs;
 
     pub fn static_options(args: Vec<String>) -> Result<i8, String> {
-        if args[2].to_string() == "train" {
-            let types = vec!["ransomware","goodware"];
-            for apk_type in types {
-                let _res = parse_data_from_apk(args[2].to_string(), apk_type.to_string());
+        let types = vec!["ransomware","goodware"]; // Goodware can be added to this vector.
+        for apk_type in types {
+            let _res = get_data_from_apk(args[2].to_string(), apk_type.to_string());
+            if args[2].to_string() == "class" {
+                let _m_res = classify(apk_type.to_string()).unwrap();
             }
-            let m_res = static_model();
-            if m_res.is_ok() {
-                Ok(1)
-            } else {
-                Err("Error in read args.".to_string())
-            }
-        } else if args[2].to_string() == "class" {
-            let types = vec!["ransomware"]; // Goodware can be added to this vector.
-            for apk_type in types {
-                let _res = parse_data_from_apk(args[2].to_string(), apk_type.to_string());
-                let _m_res = classify(apk_type.to_string());
-            }
-            Ok(1)
-        } else {
-            Err("Invalid option".to_string())
         }
+        let train_result = if args[2].to_string() == "train" {
+            let m_res = static_model(1);
+            if m_res.is_ok() {Ok(1)} 
+            else {Err("Training failed".to_string())}
+        } else {Ok(2)};
+        train_result
     }
     
-    pub fn parse_data_from_apk(option: String, data_type: String) -> Result<i8, String> {
+    pub fn get_data_from_apk(option: String, data_type: String) -> Result<i8, String> {
         if option == "train" || option == "class" && data_type == "ransomware" || data_type == "goodware" {
                 let in_folder = format!("./data/{}/static/{}/",data_type,option);
                 println!("Analyzing packages under /data/{}/static/{}/",data_type,option);
@@ -51,11 +41,10 @@ pub mod static_analysis {
     pub fn static_data(dir: String, out_dir: String, phase: String) -> Result<String, String> {
         let packages = fs::read_dir(dir);
         let mut out_num : i32 = 0;
-        let new_dir: String;
         let dir_names = vec![format!("./out/{}/",out_dir),format!("./out/{}/static/{}/",out_dir,phase)];
         let _main_dir = fs::create_dir(&dir_names[0]); // For parent folder. Example: /out/ransomware/
         let _sub_dir = fs::create_dir(&dir_names[1]); // For child folder. Example: /out/ransomware/static/train
-        new_dir = out_dir.to_string();
+        let new_dir = out_dir.to_string();
     
         if packages.is_ok() {
             for package in packages.unwrap() {
@@ -87,8 +76,8 @@ pub mod static_analysis {
         }
     }
     
-    pub fn static_model() -> Result<i8,String> {
-        if Path::new("./out/ransomware/static/").exists() && Path::new("./out/goodware/static/").exists() {
+    pub fn static_model(train: i8) -> Result<i8,String> {
+        if train == 1 {
             let py_call = Command::new("python").arg("src/algorithm/static/static.py").arg("0").arg("ransomware")
                                                     .arg("train").stdout(Stdio::piped()).output();
             if py_call.is_ok() {

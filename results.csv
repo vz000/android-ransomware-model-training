@@ -1,4 +1,9 @@
+------------- PRECISION ONLY. PRECISION = TP/(TP+FP) ----------------
 "Result with n = 3, step = 1 is 56.99999999999999%"
 "Result with n = 3, step = 2 is 56.543456543456536%"
 "Result with n = 3, step = 1, number or ngrams = 5, is 60.0%"
 "Result with n = 3, step = 1, number or ngrams = 4, is 60.0%"
+"Result with n = 3, step = 1, number or ngrams = 4, is 71.0%"
+"Result with n = 3, step = 1, number or ngrams = 4, is 71.0%, 16 top permissions"
+"Result with n = 3, step = 1, number or ngrams = 4, is 71.6%, 17 top permissions"
+"Result with n = 3, step = 1, number or ngrams = 4, is 71.6%, 18 top permissions"

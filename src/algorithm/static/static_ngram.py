@@ -43,7 +43,7 @@ class permissions_ngram():
                                 first_match += 1
                             else:
                                 clean_list.append(0)
-                        n_gram = clean_list[0] | clean_list[1] | clean_list[2]
+                        n_gram = sum(clean_list)
                     if first_match > 0:
                         if n_gram not in self.chunks:
                             self.chunks.append(n_gram)

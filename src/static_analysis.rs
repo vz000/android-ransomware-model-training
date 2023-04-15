@@ -98,7 +98,7 @@ pub mod static_analysis {
             println!("Data classified.");
             Ok(1)
         } else {
-            Err("Something went wrong.".to_string())
+            Err("Error classifing samples.".to_string())
         }
     }
 }

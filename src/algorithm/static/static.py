@@ -14,7 +14,7 @@ from static_classify import static_classify
 #param n - n-gram size
 '''
 class static_model():
-    def __init__(self, step, type: str, phase: str, n = 3):
+    def __init__(self, step: int, type: str, phase: str, n = 3):
         self.step = step
         self.n = n
         self.type = type
@@ -37,7 +37,7 @@ class static_model():
         detectors.fit()
 
     def classify_samples(self):
-        classify = static_classify('./out/'+self.type+'/static/class/permissions.csv',3)
+        classify = static_classify('./out/'+self.type+'/static/class/permissions.csv',self.n)
         classify.classify()
 
     def parse_permissions(self, datadir_name: str) -> None:
@@ -54,4 +54,4 @@ class static_model():
                     writer = csv.writer(file)
                     writer.writerow(apk_permissions)
 
-main_static = static_model(int(sys.argv[1]),str(sys.argv[2]),str(sys.argv[3]))
+main_static = static_model(int(sys.argv[1]),str(sys.argv[2]),str(sys.argv[3]),3)

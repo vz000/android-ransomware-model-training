@@ -3,8 +3,6 @@ import math
 import pandas as pd
 import csv
 
-out_file = 'logs-ransomware.csv' # format
-
 class dynamic_model:
     def __init__(self, data_type: str, n = 3):
         self.data_type = data_type
@@ -84,42 +82,42 @@ class dynamic_model:
             return (math.floor(ci_l),math.floor(ci_u),x_)
 
         call_final_freq = []
+        with open(self.ransomware_top_calls) as list_sequences:
+            top_sequences = [secuence.rstrip() for secuence in list_sequences]
         for calls in self.parsed_logs:
-            with open(self.ransomware_top_calls) as top_sequence:
-                calls_row = []
-                for raw_sequence in top_sequence:
-                    sequence = raw_sequence[1:len(raw_sequence)-2].split(',') # Pandas adds some annoying preceding and ending "
-                    start = 0
-                    step = self.n
-                    match = 0
-                    # Calls are 3000 long, but in case it changes, keep the length of the current array.
-                    while start < len(calls):
-                        ngram = calls[start:start+step]
-                        if sequence == ngram:
-                            match += 1
-                            start = start + step
-                        else:
-                            start += 1
-                        if match > 0: # 1/3000 match doesn't make sense. To be tested.
-                            calls_row.append((sequence,match))
-                    if len(calls_row) > 0:
-                        call_final_freq.append(calls_row)
+            calls_row = []
+            for raw_sequence in top_sequences:
+                sequence = raw_sequence[1:len(raw_sequence)-2].split(',') # Pandas adds some annoying preceding and ending "
+                start = 0
+                step = self.n
+                match = 0
+                # Calls are 3000 long, but in case it changes, keep the length of the current array.
+                while start < len(calls):
+                    ngram = calls[start:start+step]
+                    if sequence == ngram:
+                        match += 1
+                        start = start + step
+                    else:
+                        start += 1
+                    if match > 0: # 1/3000 match doesn't make sense. To be tested.
+                        calls_row.append((sequence,match))
+                if len(calls_row) > 0:
+                    call_final_freq.append(calls_row)
 
         #print(len(call_final_freq)) # Ransomware: 431/500 were useful for the dynamic stage
         end_stats = []
-        with open(self.ransomware_top_calls) as top_sequences:
-            for raw_sequence in top_sequences:
-                sequence = raw_sequence[1:len(raw_sequence)-2].split(',')
-                sequence_values = []
-                for file_freq in call_final_freq:
-                    for seq in file_freq:
-                        if sequence in seq:
-                            sequence_values.append(seq[1])
-                            break
-                if len(sequence_values) > 0:
-                    end_stats.append([sequence,sequence_stats(sequence_values)])
-                else:
-                    end_stats.append([sequence,(0,0,0)])
+        for raw_sequence in top_sequences:
+            sequence = raw_sequence[1:len(raw_sequence)-2].split(',')
+            sequence_values = []
+            for file_freq in call_final_freq:
+                for seq in file_freq:
+                    if sequence in seq:
+                        sequence_values.append(seq[1])
+                        break
+            if len(sequence_values) > 0:
+                end_stats.append([sequence,sequence_stats(sequence_values)])
+            else:
+                end_stats.append([sequence,(0,0,0)])
 
         with open('syscalls-freq.csv','w', newline='') as out_file:
             writer = csv.writer(out_file)

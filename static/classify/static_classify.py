@@ -1,4 +1,3 @@
-import csv
 
 class static_classify():
     def __init__(self, inputFile: str, n : int):
@@ -6,6 +5,7 @@ class static_classify():
         self.static_detectors = []
         self.permission_list = []
         self.n = n
+        self.result_apk_tags = []
         self.__fetchDetectors__()
         self.__fetchPermissionList__()
 
@@ -23,8 +23,7 @@ class static_classify():
                     row = row.rstrip()
                 self.permission_list.append(row)
 
-    def classify(self) -> None:
-        results = []
+    def classify(self) -> list:
         with open(self.inputFile) as permissions:
             for row in permissions:
                 if len(row) > 0:
@@ -32,7 +31,6 @@ class static_classify():
                     permission = row.split(",")
                     start = 0
                     n_local_ngrams = 0
-                    step = 1
                     r = 4
                     while n_local_ngrams < r:
                         n_gram = permission[start:start+3]
@@ -44,9 +42,9 @@ class static_classify():
                                     clean_list.append(2**exp)
                                 else:
                                     clean_list.append(0)
-                            n_gram = clean_list[0] | clean_list[1] | clean_list[2]
+                            n_gram = sum(clean_list)
                             input_app.append(n_gram)
-                            start += step
+                            start += 1
                             n_local_ngrams += 1
                         else:
                             break
@@ -54,12 +52,20 @@ class static_classify():
                     result = 0
                     for detector in self.static_detectors:
                         if detector in input_app:
-                            result += 1
+                            result = 1
+                            break
+
                     if result > 0:
-                        results.append(1)
+                        self.result_apk_tags.append({
+                            'name': permission[-1].rstrip(),
+                            'static': 1,
+                            'dynamic': 0
+                        })
                     else:
-                        results.append(0)
+                        self.result_apk_tags.append({
+                            'name': permission[-1].rstrip(),
+                            'static': 0,
+                            'dynamic': 0
+                        })
         
-        with open("results.csv","a+",newline='') as res_file:
-            writer = csv.writer(res_file)
-            writer.writerow(["Result with n = {}, step = {}, number or ngrams = {}, is {}%".format(self.n,step,r,(results.count(1)/len(results))*100)])
+        return self.result_apk_tags

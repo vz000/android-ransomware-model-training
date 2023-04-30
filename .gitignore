@@ -1,6 +1,2 @@
-[Rust compiler output files]
-/target
-[Folders that contain data and output files]
-/data
-/out
-results.csv
+/data/
+/out/

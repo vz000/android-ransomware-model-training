@@ -41,7 +41,7 @@ class dynamic_frequencies:
                         break
 
             df_calls = df_calls.sort_values(by=['Times'],ascending=False)
-            df_calls['CallSeq'].head(100).to_csv(self.ransomware_top_calls, index=False, header=False) 
+            df_calls['CallSeq'].head(150).to_csv(self.ransomware_top_calls, index=False, header=False) 
         
         def calls_count(df_calls, n_gram: list) -> None:
             n_gram = ','.join(n_gram)
@@ -58,7 +58,7 @@ class dynamic_frequencies:
 
     def syscall_frequencies(self) -> None:
         def sequence_stats(values: list) -> tuple:
-            z_ = 1.7 # 0.90 Source: https://www.math.arizona.edu/~rsims/ma464/standardnormaltable.pdf and https://www.westga.edu/academics/research/vrc/assets/docs/confidence_intervals_notes.pdf
+            z_ = 1.75 # 0.90 Source: https://www.math.arizona.edu/~rsims/ma464/standardnormaltable.pdf and https://www.westga.edu/academics/research/vrc/assets/docs/confidence_intervals_notes.pdf
             n_ = len(values)
             x_ = math.floor(sum(values)/n_)
             de_ = math.floor(math.sqrt(sum([pow(x-x_,2) for x in values])/n_))
@@ -103,10 +103,8 @@ class dynamic_frequencies:
                         break
             if len(sequence_values) > 0:
                 ci_l, ci_u = sequence_stats(sequence_values)
-                if (ci_u - ci_l) > 3:
+                if (ci_u - ci_l) >= 5:
                     end_stats.append([sequence,(ci_l,ci_u)])
-            else:
-                end_stats.append([sequence,(0,0,0)])
 
         with open('syscalls-freq-'+self.data_type+'.csv','w', newline='') as out_file:
             writer = csv.writer(out_file)

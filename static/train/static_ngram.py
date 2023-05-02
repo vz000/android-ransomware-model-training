@@ -51,18 +51,10 @@ class permissions_ngram():
                         if n_gram in self.chunks:
                             index = self.chunks.index(n_gram)
                             self.times[index] += 1
-                        start = start + self.n
-                    else:
-                        start += 1
+                    start += 1
 
     def get_draft_detectors(self) -> list:
         return self.chunks
     
     def get_permission_list(self) -> list:
         return self.final_list
-
-    def get_detector_info(self):
-        amount_detector = pd.DataFrame({'Detector':self.chunks,
-                                        'Times':self.times})
-        amount_detector = amount_detector.sort_values(by=['Times'],ascending=False)
-        print(amount_detector.head(20))

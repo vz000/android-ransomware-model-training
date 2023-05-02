@@ -3,9 +3,9 @@ import pandas as pd
 import csv
 
 class dynamic_frequencies:
-    def __init__(self, data_type: str, parsed_logs: list, n = 6):
+    def __init__(self, data_type: str, parsed_logs: list):
         self.data_type = data_type
-        self.n = n
+        self.n = 6
         self.parsed_logs = parsed_logs
         self.unique_ngrams = []
         self.ransomware_top_calls = data_type + '-call-stats.csv'
@@ -15,9 +15,8 @@ class dynamic_frequencies:
 
     def __unique_ngrams__(self) -> None:
         for logs in self.parsed_logs:
-            end = len(logs) - 1
             start = 0
-            while start < end:
+            while start < len(logs):
                 n_gram = logs[start:start+self.n]
                 if n_gram not in self.unique_ngrams:
                     self.unique_ngrams.append(n_gram)
@@ -27,15 +26,11 @@ class dynamic_frequencies:
         def top_syscalls(self) -> None:
             df_calls = pd.DataFrame({'CallSeq':[],'Times':[]})
             for logs in self.parsed_logs:
-                end = len(logs) - 1
                 start = 0
-                while start < end:
+                while start < len(logs):
                     n_gram = logs[start:start+self.n]
                     if len(n_gram) == self.n:
-                        if n_gram not in self.unique_ngrams:
-                            start = start + 1
-                        else:
-                            start += 1
+                        start += 1
                         df_calls = calls_count(df_calls, n_gram)
                     else:
                         break
@@ -75,23 +70,19 @@ class dynamic_frequencies:
         for calls in self.parsed_logs:
             calls_row = []
             for raw_sequence in top_sequences:
-                sequence = raw_sequence[1:len(raw_sequence)-1].split(',') # Pandas adds some annoying preceding and ending "
+                sequence = raw_sequence[1:len(raw_sequence)-1].split(',')
                 start = 0
                 match = 0
-                # Calls are 3000 long, but in case it changes, keep the length of the current array.
                 while start < len(calls):
                     ngram = calls[start:start+self.n]
                     if sequence == ngram:
                         match += 1
-                        start = start + 1
-                    else:
-                        start += 1
+                    start += 1
                 if match > 0: 
                     calls_row.append((sequence,match))
             if len(calls_row) > 0:
                 call_final_freq.append(calls_row)
 
-        #print(len(call_final_freq)) # Ransomware: 431/500 were useful for the dynamic stage
         end_stats = []
         for raw_sequence in top_sequences:
             sequence = raw_sequence[1:len(raw_sequence)-1].split(',')

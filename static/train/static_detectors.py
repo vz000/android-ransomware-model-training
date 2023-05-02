@@ -27,12 +27,10 @@ class static_detectors():
                                 clean_list.append(2**exp)
                             else:
                                 clean_list.append(0)
-                        n_gram = clean_list[0] | clean_list[1] | clean_list[2]
+                        n_gram = sum(clean_list)
                         if n_gram not in local_ngrams:
                             local_ngrams.append(n_gram)
-                            start = start + self.n
-                        else:
-                            start += 1
+                        start += 1
                     n_local_ngrams += 1
                 self.selfset.append(local_ngrams)
 

@@ -22,7 +22,7 @@ def dynamic_classify(parsed_logs: list, freq_list: list, name_list: list) -> lis
                 start += 1
 
             if good_match < 1:
-                if top_sequences not in good_sequences_name:
+                if (top_sequences not in good_sequences_name):
                     if match in rw_range:
                         sequences_match += 1
                 else:
@@ -30,7 +30,8 @@ def dynamic_classify(parsed_logs: list, freq_list: list, name_list: list) -> lis
                     gw_range = list(range(good_freq[range_index][0],good_freq[range_index][1]+1))
                     if (match in rw_range) and (match not in gw_range):
                         sequences_match += 1
-            elif good_match > 30 and good_match < 110:
+            
+            if good_match > 30 and good_match < 110:
                 sequences_match -= 1
             s_num += 1
 

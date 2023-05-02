@@ -31,11 +31,11 @@ class static_classify():
                     permission = row.split(",")
                     start = 0
                     n_local_ngrams = 0
-                    r = 4
+                    r = 5
                     while n_local_ngrams < r:
                         n_gram = permission[start:start+3]
                         clean_list = []
-                        if len(n_gram) >= self.n:
+                        if len(n_gram) == self.n:
                             for word in n_gram:
                                 if word in self.permission_list:
                                     exp = self.permission_list.index(word.rstrip())
@@ -55,17 +55,10 @@ class static_classify():
                             result = 1
                             break
 
-                    if result > 0:
-                        self.result_apk_tags.append({
+                    self.result_apk_tags.append({
                             'name': permission[-1].rstrip(),
-                            'static': 1,
+                            'static': result,
                             'dynamic': 0
-                        })
-                    else:
-                        self.result_apk_tags.append({
-                            'name': permission[-1].rstrip(),
-                            'static': 0,
-                            'dynamic': 0
-                        })
+                    })
         
         return self.result_apk_tags

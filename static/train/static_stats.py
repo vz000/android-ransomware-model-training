@@ -32,7 +32,7 @@ class permissions_stats():
                                             ignore_index=True)
                     self.__get_permission_count__(permissions)
         self.df_permissions = self.df_permissions.sort_values(by=['Times'],ascending=False)
-        self.df_permissions['Permission'].head(18).to_csv(self.output_file, index=False, header=False)
+        self.df_permissions['Permission'].head(20).to_csv(self.output_file, index=False, header=False)
 
     def get_output_file(self) -> str:
         return self.output_file

@@ -28,7 +28,7 @@ if sys.argv[1] in methods and sys.argv[2] in phases:
             perm_ngram = permissions_ngram(folder+"train/permissions.csv",out_stats_file,n)
             ngram = perm_ngram.get_draft_detectors()
             permission_list = perm_ngram.get_permission_list()
-            detectors = static_detectors(n, ngram, permission_list, 4)
+            detectors = static_detectors(n, ngram, permission_list, 5)
             detectors.fit()
 
         elif sys.argv[2] == "classify":

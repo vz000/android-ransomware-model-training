@@ -20,3 +20,6 @@ python main.py static classify
 ```
 python main.py dynamic classify
 ```
+
+## Notes
+* Data, such as applications and system call logs, are not provided.

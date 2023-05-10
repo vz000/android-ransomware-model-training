@@ -22,4 +22,4 @@ python main.py dynamic classify
 ```
 
 ## Notes
-* Data, such as applications and system call logs, are not provided.
+* Data, such as applications and system call logs, is not provided.

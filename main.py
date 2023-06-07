@@ -16,18 +16,21 @@ n = 3
 
 results = []
 if sys.argv[1] in methods and sys.argv[2] in phases:
+    # entrenamiento y clasificacion estática
     if sys.argv[1] == "static": 
         for sample_type in sample_types:
                 datadir = './out/'+sample_type+'/'+sys.argv[1]+'/'+sys.argv[2]+'/'
+                # crea archivo permissions.csv
                 parsed_static = parse_static_data(datadir,sample_type,sys.argv[2])
 
         if sys.argv[2] == "train":
             folder = "./out/ransomware/static/"
-            stats = permissions_stats("ransomware")
+            stats = permissions_stats("ransomware") # para obtener static.csv
             out_stats_file = stats.get_output_file()
             perm_ngram = permissions_ngram(folder+"train/permissions.csv",out_stats_file,n)
-            ngram = perm_ngram.get_draft_detectors()
-            permission_list = perm_ngram.get_permission_list()
+            ngram = perm_ngram.get_draft_detectors() # recupera la lista de detectores obtenida
+            permission_list = perm_ngram.get_permission_list() # recupera la lista de permisos
+            # elimina detectors comunes entre ransomware y goodware
             detectors = static_detectors(n, ngram, permission_list, 5)
             detectors.fit()
 
@@ -37,9 +40,10 @@ if sys.argv[1] in methods and sys.argv[2] in phases:
                 results.append(classify.classify())
             print(get_results(results))
 
+# entrenamiento y clasificación dinámica.
     elif sys.argv[1] == "dynamic":
         if sys.argv[2] == "train":
-            parsed_out = parse_dynamic_data("ransomware",sys.argv[2])
+            parsed_out = parse_dynamic_data("ransomware",sys.argv[2]) # ajuste de registros
             dynamic_frequencies("ransomware",parsed_out.parsed_logs())
             parsed_out = parse_dynamic_data("goodware",sys.argv[2])
             dynamic_frequencies("goodware",parsed_out.parsed_logs())
@@ -47,7 +51,7 @@ if sys.argv[1] in methods and sys.argv[2] in phases:
         elif sys.argv[2] == "classify":
             results = []
             list_num = 0
-            get_freq_list = [parse_freq_data("ransomware"),parse_freq_data("goodware")]
+            get_freq_list = [parse_freq_data("ransomware"),parse_freq_data("goodware")] # ajuste de registros
             for sample_type in sample_types:
                 parsed_out = parse_dynamic_data(sample_type,sys.argv[2])
                 get_names_list = parsed_out.log_file_names()

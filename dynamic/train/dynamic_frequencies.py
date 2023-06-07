@@ -10,46 +10,34 @@ class dynamic_frequencies:
         self.unique_ngrams = []
         self.ransomware_top_calls = data_type + '-call-stats.csv'
         self.__unique_ngrams__() # fetch unique ngrams
-        self.syscall_stats()
         self.syscall_frequencies()
 
+# obtiene n-gramas unicos de tamaño 6 y los almacena en una lista para posteriormente
+# obtener sus estadísticas: qué tan comunes son entre todos los registros de cada tipo de muestra
     def __unique_ngrams__(self) -> None:
+        df_calls = pd.DataFrame({'CallSeq':[],'Times':[]}) #crea dataframe
         for logs in self.parsed_logs:
             start = 0
             while start < len(logs):
                 n_gram = logs[start:start+self.n]
                 if n_gram not in self.unique_ngrams:
                     self.unique_ngrams.append(n_gram)
+                df_calls = self.calls_count(df_calls,n_gram)
                 start += 1
 
-    def syscall_stats(self):
-        def top_syscalls(self) -> None:
-            df_calls = pd.DataFrame({'CallSeq':[],'Times':[]})
-            for logs in self.parsed_logs:
-                start = 0
-                while start < len(logs):
-                    n_gram = logs[start:start+self.n]
-                    if len(n_gram) == self.n:
-                        start += 1
-                        df_calls = calls_count(df_calls, n_gram)
-                    else:
-                        break
+        df_calls = df_calls.sort_values(by=['Times'],ascending=False)
+        df_calls['CallSeq'].head(150).to_csv(self.ransomware_top_calls, index=False, header=False) 
 
-            df_calls = df_calls.sort_values(by=['Times'],ascending=False)
-            df_calls['CallSeq'].head(150).to_csv(self.ransomware_top_calls, index=False, header=False) 
-        
-        def calls_count(df_calls, n_gram: list) -> None:
-            n_gram = ','.join(n_gram)
-            n_gram = n_gram.rstrip()
-            call_empty = df_calls[df_calls['CallSeq']==n_gram]
-            if call_empty.empty:
-                df_calls = pd.concat([df_calls,pd.DataFrame({'CallSeq':[n_gram],'Times':1})], ignore_index=True)
-            else:
-                index = df_calls.index[df_calls['CallSeq'] == n_gram][0]
-                df_calls.at[index,'Times'] = df_calls.at[index,'Times'] + 1
-            return df_calls
-        
-        top_syscalls(self)
+    def calls_count(self,df_calls, n_gram: list) -> None:
+        n_gram = ','.join(n_gram)
+        n_gram = n_gram.rstrip()
+        call_empty = df_calls[df_calls['CallSeq']==n_gram]
+        if call_empty.empty:
+            df_calls = pd.concat([df_calls,pd.DataFrame({'CallSeq':[n_gram],'Times':1})], ignore_index=True)
+        else:
+            index = df_calls.index[df_calls['CallSeq'] == n_gram][0]
+            df_calls.at[index,'Times'] = df_calls.at[index,'Times'] + 1
+        return df_calls
 
     def syscall_frequencies(self) -> None:
         def sequence_stats(values: list) -> tuple:

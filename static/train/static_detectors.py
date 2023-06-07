@@ -10,6 +10,8 @@ class static_detectors():
         self.first_detector_set = ngram
         self.permission_list = permission_list
 
+# obtiene los detectores de goodware utilizando un procedimiento similar al realizado
+# para recuperar los detectores de ransomware
     def __generateSelfDetectors__(self) -> None:
         with open(self.selfDataset) as dataset:
             for row in dataset:
@@ -34,6 +36,7 @@ class static_detectors():
                     n_local_ngrams += 1
                 self.selfset.append(local_ngrams)
 
+# Elimina detectores comunes entre ambos tipos de aplicaciones
     def __generateNonSelf__(self) -> None:
         for ngram in self.first_detector_set:
             match = 0
@@ -41,8 +44,9 @@ class static_detectors():
                 if ngram in chunk:
                     match = 1
             if match == 0:
-                self.detector_set.append(ngram)
-    
+                self.detector_set.append(ngram) # si no está en ambas listas, se añade a otra lista final
+
+# funcion que es llamada para realizar los procesos y almacenar en un archivo
     def fit(self) -> list:
         self.__generateSelfDetectors__()
         self.__generateNonSelf__()

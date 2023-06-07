@@ -25,7 +25,6 @@ class parse_static_data:
         package_num = 0
         for package in packages:
             if ".apk" in package:
-                #print("Reading ", in_folder+package)
                 os.system("aapt dump permissions " + in_folder + package + " > " + out_dir_names[2] +"/aapt_output"+str(package_num)+".txt")
                 package_num += 1
 
